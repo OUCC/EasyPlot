@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -46,7 +46,7 @@
                                 CornerRadius="0"/>
                     </Border>
                     <CollectionView x:Name="TabCollection"
-                                    ItemsSource="{Binding GraphGroups}">
+                                    ItemsSource="{Binding GroupTabs}">
                         <CollectionView.ItemsLayout>
                             <LinearItemsLayout Orientation="Horizontal"
                                                ItemSpacing="1"/>
@@ -71,7 +71,7 @@
                                                 HorizontalOptions="Center"
                                                 LineBreakMode="TailTruncation"
                                                 TextColor="Black"
-                                                BackgroundColor="{Binding TabBackgroundColor}"
+                                                BackgroundColor="{Binding BackgroundColor}"
                                                 CornerRadius="0"/>
                                     </Border>
                                     <Border Grid.Column="1"
@@ -93,7 +93,7 @@
                                                 HorizontalOptions="Center"
                                                 Margin="0,0,0,0"
                                                 TextColor="Black"
-                                                BackgroundColor="{Binding TabBackgroundColor}"
+                                                BackgroundColor="{Binding BackgroundColor}"
                                                 CornerRadius="0" />
                                     </Border>
                                 </Grid>
@@ -267,7 +267,7 @@
                             MinimumHeightRequest="35"
                             MaximumHeightRequest="35"
                             VerticalOptions="Center"
-                            Command="{Binding AddGraphSettingCommand}"/>
+                            Command="{Binding SelectedGroup.AddSettingCommand}"/>
                     </Grid>
 
                     <CheckBox Grid.Row="1"
@@ -279,28 +279,28 @@
 
                     <CheckBox Grid.Row="2" Grid.Column="1"
                               IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                              IsChecked="{Binding SelectedGroup.LineWidth.Enabled}"
+                              IsChecked="{Binding SelectedGroup.LineWidthEnabled}"
                               VerticalOptions="Center" />
                     <Label Grid.Row="2" Grid.Column="2"
                            Text="Line Width"
                            VerticalOptions="Center"/>
                     <Entry Grid.Row="2" Grid.Column="3"
                               IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                           Text="{Binding SelectedGroup.LineWidth.Value}" 
-                           BackgroundColor="{Binding SelectedGroup.LineWidth.BackGroundColor}" 
+                           Text="{Binding SelectedGroup.LineWidthValue}" 
+                           BackgroundColor="{Binding SelectedGroup.LineTypeValueColor}" 
                            Style="{StaticResource MainEntryStyle}"/>
 
                     <CheckBox Grid.Row="3" Grid.Column="1"
                               IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                              IsChecked="{Binding SelectedGroup.LineType.Enabled}"
+                              IsChecked="{Binding SelectedGroup.LineTypeEnabled}"
                               VerticalOptions="Center" />
                     <Label Grid.Row="3" Grid.Column="2"
                            Text="Line Type"
                            VerticalOptions="Center"/>
                     <Entry Grid.Row="3" Grid.Column="3"
                               IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                           Text="{Binding SelectedGroup.LineType.Value}" 
-                           BackgroundColor="{Binding SelectedGroup.LineType.BackGroundColor}" 
+                           Text="{Binding SelectedGroup.LineTypeValue}" 
+                           BackgroundColor="{Binding SelectedGroup.LineTypeValueColor}" 
                            Style="{StaticResource MainEntryStyle}"/>
 
                     <CheckBox Grid.Row="4"
@@ -312,58 +312,63 @@
 
                     <CheckBox Grid.Row="5" Grid.Column="1"
                               IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                              IsChecked="{Binding SelectedGroup.PointsSize.Enabled}"
+                              IsChecked="{Binding SelectedGroup.PointsSizeEnabled}"
                               VerticalOptions="Center" />
                     <Label Grid.Row="5" Grid.Column="2"
                            Text="Point Size"
                            VerticalOptions="Center"/>
                     <Entry Grid.Row="5" Grid.Column="3"
                            IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                           Text="{Binding SelectedGroup.PointsSize.Value}" 
-                           BackgroundColor="{Binding SelectedGroup.PointsSize.BackGroundColor}" 
+                           Text="{Binding SelectedGroup.PointsSizeValue}" 
+                           BackgroundColor="{Binding SelectedGroup.PointsSizeValueColor}" 
                            Style="{StaticResource MainEntryStyle}"/>
 
                     <CheckBox Grid.Row="6" Grid.Column="1"
                               IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                              IsChecked="{Binding SelectedGroup.PointsType.Enabled}"
+                              IsChecked="{Binding SelectedGroup.PointsTypeEnabled}"
                               VerticalOptions="Center" />
                     <Label Grid.Row="6" Grid.Column="2"
                            Text="Point Type"
                            VerticalOptions="Center"/>
                     <Entry Grid.Row="6" Grid.Column="3"
                               IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                           Text="{Binding SelectedGroup.PointsType.Value}" 
-                           BackgroundColor="{Binding SelectedGroup.PointsType.BackGroundColor}" 
+                           Text="{Binding SelectedGroup.PointsTypeValue}" 
+                           BackgroundColor="{Binding SelectedGroup.PointsTypeValueColor}" 
                            Style="{StaticResource MainEntryStyle}"/>
                 </Grid>
 
-                <CollectionView Grid.Row="1"
-                                x:Name="GraphCollection"
+
+                <Border Grid.Row="1"
+                        Padding="5">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <CollectionView x:Name="GraphCollection"
                                 ItemsSource="{Binding SelectedGroup.Settings}">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical"
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical"
                                            ItemSpacing="3"/>
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="5">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="5" />
-                                </Border.StrokeShape>
-                                <Grid ColumnDefinitions="40, 1*, 3*"
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="5">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="40, 1*, 3*"
                                       RowDefinitions="*,*,*,*">
-                                    <CheckBox IsChecked="{Binding Title.Enabled}" 
+                                        <CheckBox IsChecked="{Binding TitleEnabled}" 
                                               VerticalOptions="Center"/>
-                                    <Label Grid.Column="1"
+                                        <Label Grid.Column="1"
                                            Text="Title"
                                            VerticalOptions="Center" />
-                                    <Grid Grid.Column="2" 
+                                        <Grid Grid.Column="2" 
                                           ColumnDefinitions="*,50">
-                                        <Entry
-                                           Text="{Binding Title.Value}"
-                                           BackgroundColor="{Binding Title.BackGroundColor}" 
+                                            <Entry
+                                           Text="{Binding TitleValue}"
+                                           BackgroundColor="{Binding TitleValueColor}" 
                                            Style="{StaticResource MainEntryStyle}"/>
-                                        <Button Grid.Column="1" 
+                                            <Button Grid.Column="1" 
                                                 Text="X" 
                                                 BackgroundColor="Gray"
                                                 MaximumHeightRequest="40"
@@ -371,65 +376,68 @@
                                                 MaximumWidthRequest="40"
                                                 MinimumWidthRequest="40"
                                                 VerticalOptions="Center"
-                                                Command="{Binding Source={x:Reference GraphCollection}, Path=BindingContext.RemoveGraphSettingCommand}"
-                                                CommandParameter="{Binding Id}"/>
-                                    </Grid>
+                                                Command="{Binding Source={x:Reference GraphCollection}, Path=BindingContext.SelectedGroup.RemoveSettingCommand}"
+                                                CommandParameter="{Binding Model.Id}"/>
+                                        </Grid>
 
-                                    <RadioButton Grid.Row="1" Grid.ColumnSpan="2"
+                                        <RadioButton Grid.Row="1" Grid.ColumnSpan="2"
                                              Content="Function"
                                              IsChecked="{Binding IsFunction}" />
-                                    <Entry Grid.Row="1" Grid.Column="2"
+                                        <Entry Grid.Row="1" Grid.Column="2"
                                        Text="{Binding FunctionText}"
-                                       BackgroundColor="{Binding FunctionBackgroundColor}"    
+                                       BackgroundColor="{Binding FunctionTextColor}"    
                                        Style="{StaticResource MainEntryStyle}" />
 
-                                    <RadioButton Grid.Row="2" Grid.ColumnSpan="2"
-                                             Content="Data File" />
-                                    <Grid Grid.Row="2" Grid.Column="2" 
+                                        <RadioButton Grid.Row="2" Grid.ColumnSpan="2"
+                                             Content="Data File"
+                                             IsChecked="{Binding IsDataFile}"/>
+                                        <Grid Grid.Row="2" Grid.Column="2" 
                                           ColumnDefinitions="*,50">
-                                        <Label Text="{Binding DataFileName}"
+                                            <Label Text="{Binding DataFileName}"
                                            LineBreakMode="TailTruncation" 
                                            VerticalOptions="Center"/>
-                                        <Button Grid.Column="1" 
+                                            <Button Grid.Column="1" 
                                                 Text="🗀" 
-                                                IsEnabled="{Binding IsDataFile}"
                                                 Command="{Binding OpenFilePickerCommand}"/>
-                                    </Grid>
+                                        </Grid>
 
 
-                                    <HorizontalStackLayout Grid.Row="3" Grid.Column="1">
-                                        <CheckBox IsChecked="{Binding UsingRange.Enabled}"
+                                        <HorizontalStackLayout Grid.Row="3" Grid.Column="1">
+                                            <CheckBox IsChecked="{Binding UsingRangeEnabled}"
                                               IsEnabled="{Binding IsDataFile}"
                                               VerticalOptions="Center"/>
-                                        <Label Text="Using"
+                                            <Label Text="Using"
                                            VerticalOptions="Center" />
-                                    </HorizontalStackLayout>
-                                    <Grid Grid.Row="3" Grid.Column="2"
+                                        </HorizontalStackLayout>
+                                        <Grid Grid.Row="3" Grid.Column="2"
                                       ColumnDefinitions="*,15,*">
-                                        <Entry Text="{Binding UsingRange.Start}"
+                                            <Entry Text="{Binding UsingRangeStart}"
                                            IsEnabled="{Binding IsDataFile}"
-                                           BackgroundColor="{Binding UsingRange.BackGroundColor}" 
+                                           BackgroundColor="{Binding UsingRangeTextColor}" 
                                            Style="{StaticResource MainEntryStyle}" />
-                                        <Label Grid.Column="1"
+                                            <Label Grid.Column="1"
                                            Text=":"
                                            VerticalOptions="Center"
                                            HorizontalOptions="Center" />
-                                        <Entry Grid.Column="2"
-                                           Text="{Binding UsingRange.End}"
+                                            <Entry Grid.Column="2"
+                                           Text="{Binding UsingRangeEnd}"
                                            IsEnabled="{Binding IsDataFile}"
-                                           BackgroundColor="{Binding UsingRange.BackGroundColor}" 
+                                           BackgroundColor="{Binding UsingRangeTextColor}" 
                                            Style="{StaticResource MainEntryStyle}" />
+                                        </Grid>
                                     </Grid>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
             </Grid>
         </Grid>
 
         <Grid Grid.Column="1"
               RowDefinitions="*, 80">
+            <Label Text="{Binding ErrorText}"
+                   IsVisible="{Binding IsGenerateError}" />
             <Image IsVisible="{Binding IsGenerateSuccess}"
                    Source="{Binding ResultImage}" />
             <Button Grid.Row="2"

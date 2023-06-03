@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace EasyPlot.ViewModels.Values;
+namespace EasyPlot.ViewModels.Wrapper;
 
 internal partial class WholeSettings : ObservableObject
 {

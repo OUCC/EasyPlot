@@ -75,10 +75,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Models\" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <MauiXaml Update="Views\TabButton.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

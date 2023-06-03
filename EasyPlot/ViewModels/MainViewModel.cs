@@ -3,11 +3,13 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EasyPlot.Models;
 using EasyPlot.Utilities;
-using EasyPlot.ViewModels.Values;
+using EasyPlot.ViewModels.Wrapper;
 using Microsoft.Maui.Storage;
 
 namespace EasyPlot.ViewModels;
@@ -16,38 +18,15 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
 {
     public static Encoding UTF8WithoutBOM { get; } = new UTF8Encoding(false);
 
-
     public ReadOnlyCollection<WholeSettings> WholeSettinsEnumerable { get; }
 
     public WholeSettings WholeSettings { get; } = new();
 
-    public ObservableCollection<GraphGroup> GraphGroups { get; set; }
+    public List<GraphGroupModel> GraphGroups { get; set; }
 
-    public GraphGroup SelectedGroup
-    {
-        get
-        {
-            var group = GraphGroups.FirstOrDefault(g => g.Selected);
-            if (group is null)
-            {
-                if (GraphGroups.Any())
-                {
-                    group = GraphGroups.First();
-                    IsWholeSetting = true;
-                }
-                else
-                {
-                    group = new GraphGroup
-                    {
-                        GroupTitle = "Group 1",
-                    };
-                    GraphGroups.Add(group);
-                    IsWholeSetting = true;
-                }
-            }
-            return group!;
-        }
-    }
+    public ObservableCollection<GroupTabViewModel> GroupTabs { get; }
+
+    public GraphGroupViewModel SelectedGroup { get; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsGraphSetting))]
@@ -86,8 +65,10 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         WholeSettinsEnumerable = new(new[] { WholeSettings });
 
-        var g = new GraphGroup() { GroupTitle = $"Group 1" };
+        var g = new GraphGroupModel() { GroupTitle = "Group 1" };
         GraphGroups = new(new[] { g });
+        SelectedGroup = new(g);
+        GroupTabs = new(new[] { new GroupTabViewModel(g, SelectedGroup) });
 
         _loopTimer = new PeriodicTimer(TimeSpan.FromSeconds(2));
         PlotImageLoopAsync();
@@ -98,59 +79,64 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
     private void OnWholeSetting()
     {
         IsWholeSetting = true;
-        foreach (var group in GraphGroups)
+        foreach (var tab in GroupTabs)
         {
-            group.Selected = false;
+            tab.Selected = false;
         }
     }
 
     [RelayCommand]
     private void OnAddGroup()
     {
-        var g = new GraphGroup()
+        var g = new GraphGroupModel
         {
-            GroupTitle = $"Group {GraphGroups.Count + 1}"
+            GroupTitle = $"Group {GraphGroups.Count + 1}",
         };
         GraphGroups.Add(g);
+        GroupTabs.Add(new GroupTabViewModel(g, SelectedGroup));
     }
 
     [RelayCommand]
     private void OnRemoveGroup(int id)
     {
         var group = GraphGroups.FirstOrDefault(g => g.Id == id);
-        if (group is null)
-            return;
+        if (group is null) return;
 
         GraphGroups.Remove(group);
-        OnPropertyChanged(nameof(SelectedGroup));
+
+        var groupViewModel = GroupTabs.FirstOrDefault(g => g.Id == id);
+        if (groupViewModel is null) return;
+
+        GroupTabs.Remove(groupViewModel);
+
+        if (GroupTabs.Count == 0)
+        {
+            var newGroup = new GraphGroupModel
+            {
+                GroupTitle = "Group 1",
+            };
+            GraphGroups.Add(newGroup);
+            GroupTabs.Add(new(newGroup, SelectedGroup));
+            IsWholeSetting = true;
+            SelectedGroup.SelectedModel = newGroup;
+        }
+        else if (groupViewModel.Selected)
+        {
+            IsWholeSetting = true;
+            SelectedGroup.SelectedModel = GraphGroups.First();
+        }
+        groupViewModel.Dispose();
     }
 
     [RelayCommand]
     private void OnSelectGroup(int id)
     {
-        foreach (var group in GraphGroups)
+        foreach (var group in GroupTabs)
         {
             group.Selected = group.Id == id;
         }
+        SelectedGroup.SelectedModel = GraphGroups.First(g => g.Id == id);
         IsWholeSetting = false;
-        OnPropertyChanged(nameof(SelectedGroup));
-    }
-
-    [RelayCommand]
-    private void OnAddGraphSetting()
-    {
-        var s = new GraphSettings();
-        SelectedGroup.Settings.Add(s);
-    }
-
-    [RelayCommand]
-    private void OnRemoveGraphSetting(int id)
-    {
-        var s = SelectedGroup.Settings.FirstOrDefault(s => s.Id == id);
-        if (s is null)
-            return;
-
-        SelectedGroup.Settings.Remove(s);
     }
 
     [RelayCommand]
@@ -202,7 +188,7 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
                 }
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
-                    Console.WriteLine(ex.ToString());
+                    ErrorText = ex.ToString();
                 }
             }
         }
@@ -233,9 +219,11 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
         if (process is null)
             return;
 
+        var errorText = await process.StandardError.ReadLineAsync(cancellationToken) ?? string.Empty;
         await process.WaitForExitAsync(cancellationToken);
 
-        var errorText = await process.StandardOutput.ReadLineAsync(cancellationToken) ?? string.Empty;
+        if (errorText != string.Empty)
+            errorText = errorText.Replace($"\"{gpFilePath}\"", string.Empty);
 
         lock (_lockObj)
         {
@@ -247,6 +235,8 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
             else
             {
                 ErrorText = errorText;
+                if (IsGenerateError)
+                    return;
             }
         }
 
@@ -294,7 +284,7 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
                     builder.Append($"{s.FunctionText} ");
                 else
                 {
-                    builder.Append($"\"{s.DataFilePath}\" ");
+                    builder.Append($"\"{s.DataFilePath.Replace('\\', '/')}\" ");
                     if (s.UsingRange.Enabled)
                         builder.Append($"using {s.UsingRange.Start}:{s.UsingRange.End} ");
                 }

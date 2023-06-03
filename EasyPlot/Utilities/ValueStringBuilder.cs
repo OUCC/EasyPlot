@@ -52,19 +52,26 @@ internal ref struct ValueStringBuilder
 
     public void Append(ReadOnlySpan<char> value)
     {
-        if (Disposed)
-            ThrowInvalidOperationException();
+        try
+        {
+            if (Disposed)
+                ThrowObjectDisposedException();
 
-        EnsureBuffer(value.Length);
+            EnsureBuffer(Length + value.Length);
 
-        value.CopyTo(_buffer[Length..]);
-        Length += value.Length;
+            value.CopyTo(_buffer[Length..]);
+            Length += value.Length;
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
     public void Append<T>(T value, ReadOnlySpan<char> format = default) where T : ISpanFormattable
     {
         if (Disposed)
-            ThrowInvalidOperationException();
+            ThrowObjectDisposedException();
 
         int charsWritten;
         while (!value.TryFormat(_buffer[Length..], out charsWritten, format, _culture))
@@ -79,7 +86,9 @@ internal ref struct ValueStringBuilder
     {
         ref var childBuilder = ref handler.GetInnerBuilder();
 
-        if (Disposed || Length != handler.ParentLength)
+        if (Disposed)
+            ThrowObjectDisposedException();
+        else if (Length != handler.ParentLength)
             ThrowInvalidOperationException();
 
         if (_rentChars == childBuilder._rentChars)
@@ -91,6 +100,7 @@ internal ref struct ValueStringBuilder
         if (_rentChars is not null)
             ArrayPool<char>.Shared.Return(_rentChars);
         _rentChars = childBuilder._rentChars;
+        _buffer = _rentChars.AsSpan();
         Length = childBuilder.Length;
     }
 
@@ -113,7 +123,7 @@ internal ref struct ValueStringBuilder
     public override readonly string ToString()
     {
         if (Disposed)
-            ThrowInvalidOperationException();
+            ThrowObjectDisposedException();
 
         return _buffer[..Length].ToString();
     }
@@ -151,7 +161,9 @@ internal ref struct ValueStringBuilder
 
     private void ApplyFrom(scoped in ValueStringBuilder childBuilder, int parentLength)
     {
-        if (Disposed || Length == parentLength)
+        if (Disposed)
+            ThrowObjectDisposedException();
+        else if (Length != parentLength)
             ThrowInvalidOperationException();
 
         if (_rentChars == childBuilder._rentChars)
@@ -163,6 +175,7 @@ internal ref struct ValueStringBuilder
         if (_rentChars is not null)
             ArrayPool<char>.Shared.Return(_rentChars);
         _rentChars = childBuilder._rentChars;
+        _buffer = _rentChars.AsSpan();
         Length = childBuilder.Length;
     }
 
@@ -178,6 +191,9 @@ internal ref struct ValueStringBuilder
         }
         Disposed = true;
     }
+
+    [DoesNotReturn]
+    static void ThrowObjectDisposedException() => throw new ObjectDisposedException(nameof(ValueStringBuilder));
 
     [DoesNotReturn]
     static void ThrowInvalidOperationException() => throw new InvalidOperationException();
