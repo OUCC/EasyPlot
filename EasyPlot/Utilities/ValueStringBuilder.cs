@@ -52,20 +52,13 @@ internal ref struct ValueStringBuilder
 
     public void Append(ReadOnlySpan<char> value)
     {
-        try
-        {
-            if (Disposed)
-                ThrowObjectDisposedException();
+        if (Disposed)
+            ThrowObjectDisposedException();
 
-            EnsureBuffer(Length + value.Length);
+        EnsureBuffer(Length + value.Length);
 
-            value.CopyTo(_buffer[Length..]);
-            Length += value.Length;
-        }
-        catch (Exception ex)
-        {
-            throw;
-        }
+        value.CopyTo(_buffer[Length..]);
+        Length += value.Length;
     }
 
     public void Append<T>(T value, ReadOnlySpan<char> format = default) where T : ISpanFormattable

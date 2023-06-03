@@ -6,13 +6,13 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="maui-package-name-placeholder" Publisher="CN=miyaji255" Version="0.1.6.0" />
+  <Identity Name="EasyPlot" Publisher="CN=OUCC" Version="0.2.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="A62B9B41-C411-457C-919C-6A7B145BA232" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>$placeholder$</DisplayName>
-    <PublisherDisplayName>User Name</PublisherDisplayName>
+    <PublisherDisplayName>OUCC</PublisherDisplayName>
     <Logo>$placeholder$.png</Logo>
   </Properties>
 

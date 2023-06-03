@@ -16,12 +16,12 @@
 		<ApplicationTitle>EasyPlot</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.easyplot</ApplicationId>
+		<ApplicationId>org.oucc.easyplot</ApplicationId>
 		<ApplicationIdGuid>57aa4d4d-d9c8-444b-8de9-ca3c3f2afb3a</ApplicationIdGuid>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>0.2.0</ApplicationDisplayVersion>
+		<ApplicationVersion>0.2</ApplicationVersion>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.6</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
@@ -38,12 +38,12 @@
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
     <PlatformTarget>x64</PlatformTarget>
+    <DefaultLanguage>ja-JP</DefaultLanguage>
 	</PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(Configuration)' == 'Release' and '$(PackageCertificateThumbprintOverrride)' != ''">
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <PackageCertificateThumbprint>$(PackageCertificateThumbprintOverrride)</PackageCertificateThumbprint>
-    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' and '$(RuntimeIdentifierOverride)' != ''">
@@ -52,7 +52,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\icon.svg"/>
+		<MauiIcon Include="Resources\AppIcon\icon.svg" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
