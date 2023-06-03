@@ -292,7 +292,19 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
                 if (s.Title.Enabled)
                     builder.Append($"title \"{s.Title.Value}\" ");
 
-                if (g.IsWithLines)
+                if (g.IsWithLines && g.IsWithPoints)
+                {
+                    builder.Append("with linespoints ");
+                    if (g.LineType.Enabled)
+                        builder.Append($"linetype {g.LineType.Value} ");
+                    if (g.LineWidth.Enabled)
+                        builder.Append($"linewith {g.LineWidth.Value} ");
+                    if (g.PointsType.Enabled)
+                        builder.Append($"pointtype {g.PointsType.Value} ");
+                    if (g.PointsSize.Enabled)
+                        builder.Append($"pointsize {g.PointsSize.Value} ");
+                }
+                else if (g.IsWithLines)
                 {
                     builder.Append("with lines ");
                     if (g.LineType.Enabled)
@@ -300,8 +312,7 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
                     if (g.LineWidth.Enabled)
                         builder.Append($"linewith {g.LineWidth.Value} ");
                 }
-
-                if (g.IsWithPoints)
+                else if (g.IsWithPoints)
                 {
                     builder.Append("with points ");
                     if (g.PointsType.Enabled)
