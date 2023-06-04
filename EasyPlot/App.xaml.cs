@@ -1,4 +1,4 @@
-﻿namespace EasyPlot;
+﻿namespace OUCC.EasyPlot;
 
 public partial class App : Application
 {

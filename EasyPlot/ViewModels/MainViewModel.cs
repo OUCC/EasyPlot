@@ -70,7 +70,7 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
         SelectedGroup = new(g);
         GroupTabs = new(new[] { new GroupTabViewModel(g, SelectedGroup) });
 
-        _loopTimer = new PeriodicTimer(TimeSpan.FromSeconds(2));
+        _loopTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         PlotImageLoopAsync();
     }
 

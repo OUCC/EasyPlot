@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
+using OUCC.EasyPlot.WinUI;
 
-namespace EasyPlot;
+namespace OUCC.EasyPlot;
 
 public static class MauiProgram
 {
@@ -16,8 +18,21 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			}).UseMauiCommunityToolkit();
 
+#if WINDOWS10_0_17763_0_OR_GREATER
+        builder.ConfigureLifecycleEvents(events =>
+        {
+            events.AddWindows(wndLifeCycleBuilder =>
+            {
+                wndLifeCycleBuilder.OnWindowCreated(window =>
+                {
+                    window.TryMicaOrAcrylic();
+                });
+            });
+        });
+#endif
+
 #if DEBUG
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
 		return builder.Build();

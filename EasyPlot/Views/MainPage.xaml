@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:view_models="clr-namespace:EasyPlot.ViewModels"
-             x:Class="EasyPlot.MainPage">
+             x:Class="OUCC.EasyPlot.Views.MainPage"
+             Shell.NavBarIsVisible="False">
     <ContentPage.BindingContext>
         <view_models:MainViewModel />
     </ContentPage.BindingContext>
@@ -15,7 +16,6 @@
             <Setter Property="HeightRequest" Value="35" />
             <Setter Property="MinimumHeightRequest" Value="35" />
         </Style>
-        <FileImageSourceConverter x:Key="FISConverter" />
     </ContentPage.Resources>
 
     <Grid ColumnDefinitions="1*, 3, 1*"
@@ -263,7 +263,8 @@
                                Margin="0,0,10,0"
                            Text="{Binding SelectedGroup.GroupTitle}" 
                            Style="{StaticResource MainEntryStyle}"/>
-                        <Button Grid.Column="2" 
+                        <Button
+                            Grid.Column="2" 
                             Text="Add Graph" 
                             WidthRequest="100" 
                             MinimumHeightRequest="35"
@@ -288,9 +289,10 @@
                            VerticalOptions="Center"/>
                     <Entry Grid.Row="2" Grid.Column="3"
                               IsEnabled="{Binding SelectedGroup.IsWithLines}"
+                           BackgroundColor="{Binding SelectedGroup.LineWidthValueColor}" 
                            Text="{Binding SelectedGroup.LineWidthValue}" 
-                           BackgroundColor="{Binding SelectedGroup.LineTypeValueColor}" 
-                           Style="{StaticResource MainEntryStyle}"/>
+                           Style="{StaticResource MainEntryStyle}">
+                    </Entry>
 
                     <CheckBox Grid.Row="3" Grid.Column="1"
                               IsEnabled="{Binding SelectedGroup.IsWithLines}"
@@ -436,12 +438,20 @@
         <Border Grid.Column="1" />
 
         <Grid Grid.Column="2"
-              RowDefinitions="*, 80">
-            <Label Text="{Binding ErrorText}"
-                   IsVisible="{Binding IsGenerateError}" />
-            <Image IsVisible="{Binding IsGenerateSuccess}"
-                   Source="{Binding ResultImage}" />
-            <Button Grid.Row="2"
+              RowDefinitions="40, *, 80">
+            <ImageButton
+                Source="{AppThemeBinding Default=settings_light.png, Light=settings_light.png, Dark=settings_dark.png}"
+                WidthRequest="40"
+                HorizontalOptions="End"/>
+            <Label
+                Grid.Row="1"
+                Text="{Binding ErrorText}"
+                IsVisible="{Binding IsGenerateError}" />
+            <Image
+                Grid.Row="1"
+                IsVisible="{Binding IsGenerateSuccess}"
+                Source="{Binding ResultImage}" />
+            <Button Grid.Row="3"
                     Text="Save Image"
                     MaximumWidthRequest="200"
                     MaximumHeightRequest="50"

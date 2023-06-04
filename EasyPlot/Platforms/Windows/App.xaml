@@ -1,8 +1,8 @@
-﻿<maui:MauiWinUIApplication
-    x:Class="EasyPlot.WinUI.App"
+<maui:MauiWinUIApplication
+    x:Class="OUCC.EasyPlot.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maui="using:Microsoft.Maui"
-    xmlns:local="using:EasyPlot.WinUI">
+    xmlns:local="using:OUCC.EasyPlot.WinUI">
 
 </maui:MauiWinUIApplication>
