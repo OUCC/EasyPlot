@@ -1,6 +1,6 @@
 ﻿namespace EasyPlot.Models;
 
-internal class RangeValueModel<T>
+public class RangeValueModel<T>
 {
     public RangeValueModel(T defaultValue)
     {

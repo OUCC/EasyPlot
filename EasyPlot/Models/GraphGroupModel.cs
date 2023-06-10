@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EasyPlot.Models
 {
-    internal class GraphGroupModel
+    public class GraphGroupModel
     {
         /// <summary>
         /// セッション中でユニークなIDです
@@ -18,11 +18,11 @@ namespace EasyPlot.Models
 
         public List<GraphSettingModel> Settings = new();
 
-        public string GroupTitle { get; set; }=string.Empty;
+        public string GroupTitle { get; set; } = string.Empty;
 
         public bool IsWithLines { get; set; }
 
-        public TextValueModel<string> LineWidth { get; set; } =new(string.Empty);
+        public TextValueModel<string> LineWidth { get; set; } = new(string.Empty);
 
         public TextValueModel<string> LineType { get; set; } = new(string.Empty);
 

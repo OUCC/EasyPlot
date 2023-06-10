@@ -1,28 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using EasyPlot.ViewModels.Wrapper;
+using Windows.Storage.Pickers;
 
 namespace EasyPlot.Models;
 
-internal class GraphSettingModel
+public partial class GraphSettingModel : ObservableObject
 {
-    /// <summary>
-    /// セッション中でユニークなIDです
-    /// </summary>
-    [JsonIgnore]
-    public int Id { get; } = _idSource++;
-    private static int _idSource = 0;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsDataFile))]
+    private bool _isFunction = true;
 
-    public TextValueModel<string> Title { get; set; } = new(string.Empty);
+    public bool IsDataFile => !IsFunction;
 
-    public bool IsFunction { get; set; } = true;
+    [ObservableProperty]
+    private string _functionText = string.Empty;
 
-    public string FunctionText { get; set; } = string.Empty;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DataFileName))]
+    private string _dataFilePath = string.Empty;
 
-    public string DataFilePath { get; set; } = string.Empty;
+    public string DataFileName => Path.GetFileName(DataFilePath);
 
-    public RangeValueModel<string> UsingRange { get; set; } = new(string.Empty);
+    [ObservableProperty]
+    private RangeTextViewModel _usingRange = new();
+
+    [ObservableProperty]
+    private TextBoxViewModel<string> _title = new(string.Empty);
+
+    [RelayCommand]
+    private async Task OnOpenFilePicker()
+    {
+        var picker = new FileOpenPicker();
+        picker.FileTypeFilter.Add("*");
+        picker.FileTypeFilter.Add("*.txt, *.tsv");
+        var result = await picker.PickSingleFileAsync();
+        if (result is null)
+            return;
+
+        DataFilePath = result.Path;
+        IsFunction = false;
+    }
+
+    [RelayCommand]
+    private void OnFunctionTextBoxClicked()
+    {
+        IsFunction = true;
+    }
 }

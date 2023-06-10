@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EasyPlot.Models
 {
-    internal class TextValueModel<T>
+    public class TextValueModel<T>
     {
         public TextValueModel(T defaultValue)
         {

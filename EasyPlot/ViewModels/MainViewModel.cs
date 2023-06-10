@@ -1,44 +1,25 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
-using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EasyPlot.Models;
+using EasyPlot.Contracts.Services;
 using EasyPlot.Utilities;
 using EasyPlot.ViewModels.Wrapper;
-using Microsoft.Maui.Storage;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 namespace EasyPlot.ViewModels;
 
-internal sealed partial class MainViewModel : ObservableObject, IDisposable
+public partial class MainViewModel : ObservableRecipient
 {
     public static Encoding UTF8WithoutBOM { get; } = new UTF8Encoding(false);
 
-    public ReadOnlyCollection<WholeSettings> WholeSettinsEnumerable { get; }
-
     public WholeSettings WholeSettings { get; } = new();
 
-    public List<GraphGroupModel> GraphGroups { get; set; }
-
-    public ObservableCollection<GroupTabViewModel> GroupTabs { get; }
-
-    public GraphGroupViewModel SelectedGroup { get; }
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsGraphSetting))]
-    [NotifyPropertyChangedFor(nameof(WholeSettingColor))]
-    [NotifyPropertyChangedFor(nameof(Title))]
-    private bool _isWholeSetting = true;
-
-    public bool IsGraphSetting => !IsWholeSetting;
-
-    public Color WholeSettingColor => IsWholeSetting ? Colors.WhiteSmoke : Colors.LightGray;
-
-    public string Title => IsWholeSetting ? "Whole Setting" : "Graph Setting";
+    public ObservableCollection<ObservableObject> TabItems { get; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsGenerateError))]
@@ -49,7 +30,7 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public bool IsGenerateSuccess => ErrorText == string.Empty;
 
-    public string ResultImagePath { get; set; } = Path.Combine(FileSystem.Current.CacheDirectory, "result.png");
+    public string ResultImagePath { get; set; } = Path.Combine(Path.GetTempPath(), "EasyPlot", "result.png");
 
     public ImageSource? ResultImage { get; private set; }
 
@@ -61,96 +42,60 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
 
     private string? _lastPlotText;
 
-    public MainViewModel()
-    {
-        WholeSettinsEnumerable = new(new[] { WholeSettings });
+    private readonly INavigationService _navigationService;
 
-        var g = new GraphGroupModel() { GroupTitle = "Group 1" };
-        GraphGroups = new(new[] { g });
-        SelectedGroup = new(g);
-        GroupTabs = new(new[] { new GroupTabViewModel(g, SelectedGroup) });
+    public MainViewModel(INavigationService navigationService)
+    {
+        _navigationService = navigationService;
+
+        TabItems = new(new ObservableObject[] { WholeSettings, new GraphGroupViewModel() { GroupTitle = "Group 1" } });
 
         _loopTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         PlotImageLoopAsync();
     }
 
     #region commands
-    [RelayCommand]
-    private void OnWholeSetting()
+
+    public void OnAddTabButtonClick(TabView sender, object args)
     {
-        IsWholeSetting = true;
-        foreach (var tab in GroupTabs)
+        TabItems.Add(new GraphGroupViewModel()
         {
-            tab.Selected = false;
+            GroupTitle = $"Group {TabItems.Count + 1}",
+        });
+    }
+
+    public void OnTabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+    {
+        TabItems.Remove((args.Item as ObservableObject)!);
+        if (TabItems.Count < 2)
+        {
+            TabItems.Add(new GraphGroupViewModel { GroupTitle = "Group 1" });
         }
     }
 
     [RelayCommand]
-    private void OnAddGroup()
+    private void OnSettingClicked()
     {
-        var g = new GraphGroupModel
-        {
-            GroupTitle = $"Group {GraphGroups.Count + 1}",
-        };
-        GraphGroups.Add(g);
-        GroupTabs.Add(new GroupTabViewModel(g, SelectedGroup));
-    }
-
-    [RelayCommand]
-    private void OnRemoveGroup(int id)
-    {
-        var group = GraphGroups.FirstOrDefault(g => g.Id == id);
-        if (group is null) return;
-
-        GraphGroups.Remove(group);
-
-        var groupViewModel = GroupTabs.FirstOrDefault(g => g.Id == id);
-        if (groupViewModel is null) return;
-
-        GroupTabs.Remove(groupViewModel);
-
-        if (GroupTabs.Count == 0)
-        {
-            var newGroup = new GraphGroupModel
-            {
-                GroupTitle = "Group 1",
-            };
-            GraphGroups.Add(newGroup);
-            GroupTabs.Add(new(newGroup, SelectedGroup));
-            IsWholeSetting = true;
-            SelectedGroup.SelectedModel = newGroup;
-        }
-        else if (groupViewModel.Selected)
-        {
-            IsWholeSetting = true;
-            SelectedGroup.SelectedModel = GraphGroups.First();
-        }
-        groupViewModel.Dispose();
-    }
-
-    [RelayCommand]
-    private void OnSelectGroup(int id)
-    {
-        foreach (var group in GroupTabs)
-        {
-            group.Selected = group.Id == id;
-        }
-        SelectedGroup.SelectedModel = GraphGroups.First(g => g.Id == id);
-        IsWholeSetting = false;
+        _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
     }
 
     [RelayCommand]
     private async Task OnSaveImageAsync()
     {
-        var copiedPath = Path.Combine(FileSystem.CacheDirectory, "result-copied.png");
+        var copiedPath = Path.Combine(Path.GetTempPath(), "EasyPlot", "result-copied.png");
         File.Copy(ResultImagePath, copiedPath, true);
 
-        using var fs = new FileStream(copiedPath, FileMode.Open);
-        var options = new PickOptions
-        {
-            FileTypes = FilePickerFileType.Png
-        };
-        var saveResult = await FileSaver.Default.SaveAsync("result.png", fs, _cts.Token);
+        var picker = new FileSavePicker();
+        picker.FileTypeChoices.Add("png", new[] { ".png" });
+        picker.SuggestedFileName = "result";
+        var file = await picker.PickSaveFileAsync();
+
+        if (file is null)
+            return;
+
+        CachedFileManager.DeferUpdates(file);
+        File.Copy(copiedPath, file.Path);
+        _ = await CachedFileManager.CompleteUpdatesAsync(file);
     }
     #endregion
 
@@ -201,7 +146,7 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
 
     private async Task CreatePlotImageAsync(string plotText, CancellationToken cancellationToken)
     {
-        var basePath = FileSystem.Current.CacheDirectory;
+        var basePath = Path.Combine(Path.GetTempPath(), "EasyPlot");
         var gpFilePath = Path.Combine(basePath, "result.gp");
         await File.WriteAllTextAsync(gpFilePath, plotText, UTF8WithoutBOM, cancellationToken);
         var info = new ProcessStartInfo
@@ -240,7 +185,7 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
             }
         }
 
-        ResultImage = ImageSource.FromFile(ResultImagePath);
+        //ResultImage = ImageSource.FromFile(ResultImagePath);
         OnPropertyChanged(nameof(ResultImage));
         OnPropertyChanged(nameof(ErrorText));
         OnPropertyChanged(nameof(IsGenerateError));
@@ -255,6 +200,8 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
             set terminal pngcairo
             set output "{ResultImagePath.Replace('\\', '/')}"
             """);
+
+        var graphGroups = TabItems.OfType<GraphGroupViewModel>().ToArray();
 
         if (WholeSettings.Title.Enabled)
             builder.Append($"\nset title \"{WholeSettings.Title.Value}\"");
@@ -273,10 +220,10 @@ internal sealed partial class MainViewModel : ObservableObject, IDisposable
         if (WholeSettings.Sampling.Enabled)
             builder.Append($"\nset sample {WholeSettings.Sampling.Value}");
 
-        if (GraphGroups.Any(g => g.Settings.Any()))
+        if (graphGroups.Any(g => g.Settings.Any()))
             builder.Append("\nplot ");
 
-        foreach (var g in GraphGroups)
+        foreach (var g in graphGroups)
         {
             foreach (var s in g.Settings)
             {

@@ -2,19 +2,19 @@
 
 namespace EasyPlot.ViewModels.Wrapper;
 
-internal partial class WholeSettings : ObservableObject
+public partial class WholeSettings : ObservableObject
 {
-    public TextValue<string> Title { get; set; } = new(string.Empty);
+    public TextBoxViewModel<string> Title { get; set; } = new(string.Empty);
 
-    public TextValue<string> XLabel { get; set; } = new(string.Empty);
+    public TextBoxViewModel<string> XLabel { get; set; } = new(string.Empty);
 
-    public TextValue<string> YLabel { get; set; } = new(string.Empty);
+    public TextBoxViewModel<string> YLabel { get; set; } = new(string.Empty);
 
-    public TextValue<string> Sampling { get; set; } = new(string.Empty);
+    public TextBoxViewModel<string> Sampling { get; set; } = new(string.Empty);
 
-    public RangeValue XRange { get; set; } = new();
+    public RangeTextViewModel XRange { get; set; } = new();
 
-    public RangeValue YRange { get; set; } = new();
+    public RangeTextViewModel YRange { get; set; } = new();
 
     [ObservableProperty]
     private bool _enabledXLogscale;

@@ -1,462 +1,221 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:view_models="clr-namespace:EasyPlot.ViewModels"
-             x:Class="OUCC.EasyPlot.Views.MainPage"
-             Shell.NavBarIsVisible="False">
-    <ContentPage.BindingContext>
-        <view_models:MainViewModel />
-    </ContentPage.BindingContext>
-
-    <ContentPage.Resources>
-        <Style x:Key="MainEntryStyle"
-               TargetType="Entry">
-            <Setter Property="VerticalOptions" Value="Center" />
-            <Setter Property="HeightRequest" Value="35" />
-            <Setter Property="MinimumHeightRequest" Value="35" />
+<Page
+    x:Class="EasyPlot.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wrapper="using:EasyPlot.ViewModels.Wrapper"
+    xmlns:local="using:EasyPlot.Views"
+    mc:Ignorable="d">
+    <!--Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" 固定背景のやつ-->
+    <Page.Resources>
+        <Style
+            x:Key="SettingRowStyle"
+            TargetType="Grid">
         </Style>
-    </ContentPage.Resources>
 
-    <Grid ColumnDefinitions="1*, 3, 1*"
-          ColumnSpacing="20"
-          Padding="10">
-        <Grid RowDefinitions="50,80,*">
-            <Label Text="{Binding Title}"
-                   SemanticProperties.HeadingLevel="Level1"
-                   FontSize="Large"
-                   VerticalOptions="Center"
-                   HorizontalOptions="Center" />
+        <DataTemplate x:Key="HomeTabTemplate" x:DataType="wrapper:WholeSettings">
+            <TabViewItem
+                Header="Home"
+                IsClosable="False">
+                <TabViewItem.IconSource>
+                    <SymbolIconSource Symbol="Home" />
+                </TabViewItem.IconSource>
 
-            <!-- タブ -->
-            <ScrollView Grid.Row="1"
-                        Orientation="Horizontal">
-                <HorizontalStackLayout Margin="0,0,0,10">
-                    <Border StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10,10,0,0" />
-                        </Border.StrokeShape>
-                        <Button Text="Whole Settings" 
-                                Command="{Binding WholeSettingCommand}"
-                                TextColor="Black"
-                                BackgroundColor="{Binding WholeSettingColor}"
-                                MinimumHeightRequest="40"
-                                MaximumHeightRequest="40"
-                                VerticalOptions="Center"
-                                CornerRadius="0"/>
-                    </Border>
-                    <CollectionView x:Name="TabCollection"
-                                    ItemsSource="{Binding GroupTabs}">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal"
-                                               ItemSpacing="1"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="118,28">
-                                    <Border StrokeThickness="0"
-                                            HorizontalOptions="Center">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="10,0,0,0" />
-                                        </Border.StrokeShape>
-                                        <Button Text="{Binding GroupTitle}" 
-                                                Command="{Binding Source={x:Reference TabCollection}, Path=BindingContext.SelectGroupCommand}"
-                                                CommandParameter="{Binding Id}"
-                                                MinimumWidthRequest="120"
-                                                WidthRequest="120"
-                                                MaximumWidthRequest="120"
-                                                MinimumHeightRequest="40"
-                                                MaximumHeightRequest="40"
-                                                VerticalOptions="Center"
-                                                HorizontalOptions="Center"
-                                                LineBreakMode="TailTruncation"
-                                                TextColor="Black"
-                                                BackgroundColor="{Binding BackgroundColor}"
-                                                CornerRadius="0"/>
-                                    </Border>
-                                    <Border Grid.Column="1"
-                                            StrokeThickness="0"
-                                            HorizontalOptions="Center">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="00,10,0,0" />
-                                        </Border.StrokeShape>
-                                        <Button
-                                                Text="X"
-                                                Command="{Binding Source={x:Reference TabCollection}, Path=BindingContext.RemoveGroupCommand}"
-                                                CommandParameter="{Binding Id}"
-                                                MinimumWidthRequest="30"
-                                                WidthRequest="30"
-                                                MaximumWidthRequest="30"
-                                                MinimumHeightRequest="40"
-                                                MaximumHeightRequest="40"
-                                                VerticalOptions="Center"
-                                                HorizontalOptions="Center"
-                                                Margin="0,0,0,0"
-                                                TextColor="Black"
-                                                BackgroundColor="{Binding BackgroundColor}"
-                                                CornerRadius="0" />
-                                    </Border>
+                <TabViewItem.Content>
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Text="全体設定"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="30"/>
+
+                        <ScrollViewer
+                            Grid.Row="1"
+                            VerticalScrollMode="Enabled"
+                            VerticalScrollBarVisibility="Auto"
+                            Margin="5" >
+                            <StackPanel
+                                Orientation="Vertical"
+                                Spacing="2">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="title"
+                                        IsChecked="{x:Bind Title.Enabled, Mode=TwoWay}" />
+                                    <TextBox
+                                        Grid.Column="1"
+                                        IsEnabled="{x:Bind Title.Enabled, Mode=OneWay}"
+                                        Text="{x:Bind Title.Value, Mode=TwoWay}" />
                                 </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                    <Border StrokeThickness="0">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10,10,0,0" />
-                        </Border.StrokeShape>
-                        <Button Text="＋" 
-                                Command="{Binding AddGroupCommand}"
-                                TextColor="Black"
-                                BackgroundColor="LightGray"
-                                FontAttributes="Bold"
-                                MinimumHeightRequest="40"
-                                MaximumHeightRequest="40"
-                                VerticalOptions="Center"
-                                CornerRadius="0"/>
-                    </Border>
-                </HorizontalStackLayout>
-            </ScrollView>
 
-            <!-- 全体設定　-->
-            <CollectionView Grid.Row="2"
-                            ItemsSource="{Binding WholeSettinsEnumerable}"
-                            IsVisible="{Binding IsWholeSetting}" >
-                <CollectionView.EmptyViewTemplate>
-                    <DataTemplate>
-                        <Label Text="Empty"/>
-                    </DataTemplate>
-                </CollectionView.EmptyViewTemplate>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="40, 1*, 3*"
-                              RowDefinitions="*, *, *, *, *, *, *"
-                              Padding="15,0,15,0">
-                            <CheckBox IsChecked="{Binding Title.Enabled}" 
-                              VerticalOptions="Center"/>
-                            <Label Grid.Column="1"
-                           Text="Title"
-                           VerticalOptions="Center" />
-                            <Entry Grid.Column="2"
-                           Text="{Binding Title.Value}"
-                           BackgroundColor="{Binding Title.BackGroundColor}" 
-                           VerticalOptions="Center" 
-                           HeightRequest="35" 
-                           MinimumHeightRequest="35" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
 
-                            <CheckBox Grid.Row="1"
-                              IsChecked="{Binding XLabel.Enabled}" 
-                              VerticalOptions="Center"/>
-                            <Label Grid.Row="1" Grid.Column="1"
-                           Text="X Label"
-                           VerticalOptions="Center" />
-                            <Entry Grid.Row="1" Grid.Column="2"
-                           Text="{Binding XLabel.Value}"
-                           BackgroundColor="{Binding XLabel.BackGroundColor}" 
-                           VerticalOptions="Center" 
-                           HeightRequest="35" 
-                           MinimumHeightRequest="35" />
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="xlabel"
+                                        IsChecked="{x:Bind XLabel.Enabled, Mode=TwoWay}" />
+                                    <TextBox
+                                        Grid.Column="1"
+                                        IsEnabled="{x:Bind XLabel.Enabled, Mode=OneWay}"
+                                        Text="{x:Bind XLabel.Value, Mode=TwoWay}" />
+                                </Grid>
 
-                            <CheckBox Grid.Row="2"
-                              IsChecked="{Binding YLabel.Enabled}" 
-                              VerticalOptions="Center"/>
-                            <Label Grid.Row="2" Grid.Column="1"
-                           Text="Y Label"
-                           VerticalOptions="Center" />
-                            <Entry Grid.Row="2" Grid.Column="2"
-                           Text="{Binding YLabel.Value}"
-                           BackgroundColor="{Binding YLabel.BackGroundColor}" 
-                           VerticalOptions="Center" 
-                           HeightRequest="35" 
-                           MinimumHeightRequest="35" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
 
-                            <CheckBox Grid.Row="3"
-                              IsChecked="{Binding XRange.Enabled}" 
-                              VerticalOptions="Center"/>
-                            <Label Grid.Row="3" Grid.Column="1"
-                           Text="X Range"
-                           VerticalOptions="Center" />
-                            <Grid Grid.Row="3" Grid.Column="2"
-                          ColumnDefinitions="*, 15, *">
-                                <Entry Text="{Binding XRange.Start}"
-                               BackgroundColor="{Binding XRange.BackGroundColor}"
-                               HeightRequest="35"
-                               MinimumHeightRequest="35"/>
-                                <Label Grid.Column="1"
-                               Text="~" 
-                               VerticalOptions="Center"
-                               HorizontalOptions="Center"/>
-                                <Entry Grid.Column="2"
-                               Text="{Binding XRange.End}"
-                               BackgroundColor="{Binding XRange.BackGroundColor}"
-                               HeightRequest="35"
-                               MinimumHeightRequest="35" />
-                            </Grid>
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="ylabel"
+                                        IsChecked="{x:Bind YLabel.Enabled, Mode=TwoWay}" />
+                                    <TextBox
+                                        Grid.Column="1"
+                                        IsEnabled="{x:Bind YLabel.Enabled, Mode=OneWay}"
+                                        Text="{x:Bind YLabel.Value, Mode=TwoWay}" />
+                                </Grid>
 
-                            <CheckBox Grid.Row="4"
-                              IsChecked="{Binding YRange.Enabled}" 
-                              VerticalOptions="Center"/>
-                            <Label Grid.Row="4" Grid.Column="1"
-                           Text="Y Range"
-                           VerticalOptions="Center" />
-                            <Grid Grid.Row="4" Grid.Column="2"
-                          ColumnDefinitions="*, 15, *">
-                                <Entry Text="{Binding YRange.Start}"
-                               BackgroundColor="{Binding YRange.BackGroundColor}"
-                               HeightRequest="35"
-                               MinimumHeightRequest="35"/>
-                                <Label Grid.Column="1"
-                               Text="~" 
-                               VerticalOptions="Center"
-                               HorizontalOptions="Center"/>
-                                <Entry Grid.Column="2"
-                               Text="{Binding YRange.End}"
-                               BackgroundColor="{Binding YRange.BackGroundColor}"
-                               HeightRequest="35"
-                               MinimumHeightRequest="35" />
-                            </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
 
-                            <Label Grid.Row="5" Grid.Column="1"
-                           Text="Log Scale" 
-                           VerticalOptions="Center" />
-                            <HorizontalStackLayout Grid.Row="5" Grid.Column="2" >
-                                <CheckBox IsChecked="{Binding EnabledXLogscale}"
-                                  VerticalOptions="Center" />
-                                <Label Text="X"
-                               VerticalOptions="Center" 
-                               Margin="0,0,40,0"/>
-                                <CheckBox IsChecked="{Binding EnabledYLogscale}"
-                                  VerticalOptions="Center" />
-                                <Label Text="Y"
-                               VerticalOptions="Center" />
-                            </HorizontalStackLayout>
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="xrange"
+                                        IsChecked="{x:Bind XRange.Enabled, Mode=TwoWay}" />
+                                    <TextBox
+                                        Grid.Column="1"
+                                        IsEnabled="{x:Bind XRange.Enabled, Mode=OneWay}"
+                                        Text="{x:Bind XRange.Start, Mode=TwoWay}" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Text="~"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center" />
+                                    <TextBox
+                                        Grid.Column="3"
+                                        IsEnabled="{x:Bind XRange.Enabled, Mode=OneWay}"
+                                        Text="{x:Bind XRange.End, Mode=TwoWay}" />
+                                </Grid>
 
-                            <CheckBox Grid.Row="6"
-                              IsChecked="{Binding Sampling.Enabled}" 
-                              VerticalOptions="Center"/>
-                            <Label Grid.Row="6" Grid.Column="1"
-                           Text="Sampling"
-                           VerticalOptions="Center" />
-                            <Entry Grid.Row="6" Grid.Column="2"
-                           Text="{Binding Sampling.Value}"
-                           BackgroundColor="{Binding Sampling.BackGroundColor}" 
-                           VerticalOptions="Center" 
-                           HeightRequest="35" 
-                           MinimumHeightRequest="35" />
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition Width="15" />
+                                        <ColumnDefinition Width="1*" />
+                                    </Grid.ColumnDefinitions>
 
-            <!-- グラフ設定 -->
-            <Grid Grid.Row="2"
-                  RowDefinitions="280,3,*"
-                  RowSpacing="5"
-                  IsVisible="{Binding IsGraphSetting}">
-                <Grid RowDefinitions="*,*,*,*,*,*,*,*"
-                      ColumnDefinitions="40,40,1*,4*">
-                    <Grid Grid.ColumnSpan="4"
-                          ColumnDefinitions="2*,4*,1*">
-                        <Label Text="Title" 
-                           VerticalOptions="Center"
-                           HorizontalOptions="Center"/>
-                        <Entry Grid.Column="1"
-                               Margin="0,0,10,0"
-                           Text="{Binding SelectedGroup.GroupTitle}" 
-                           Style="{StaticResource MainEntryStyle}"/>
-                        <Button
-                            Grid.Column="2" 
-                            Text="Add Graph" 
-                            WidthRequest="100" 
-                            MinimumHeightRequest="35"
-                            MaximumHeightRequest="35"
-                            VerticalOptions="Center"
-                            Command="{Binding SelectedGroup.AddSettingCommand}"/>
+                                    <CheckBox
+                                        Grid.Column="0"
+                                        Content="yrange"
+                                        IsChecked="{x:Bind YRange.Enabled, Mode=TwoWay}" />
+                                    <TextBox
+                                        Grid.Column="1"
+                                        IsEnabled="{x:Bind YRange.Enabled, Mode=OneWay}"
+                                        Text="{x:Bind YRange.Start, Mode=TwoWay}" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Text="~"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center" />
+                                    <TextBox
+                                        Grid.Column="3"
+                                        IsEnabled="{x:Bind YRange.Enabled, Mode=OneWay}"
+                                        Text="{x:Bind YRange.End, Mode=TwoWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
                     </Grid>
+                </TabViewItem.Content>
+            </TabViewItem>
+        </DataTemplate>
 
-                    <CheckBox Grid.Row="1"
-                              IsChecked="{Binding SelectedGroup.IsWithLines}"
-                              VerticalOptions="Center" />
-                    <Label Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4"
-                           Text="With Lines"
-                           VerticalOptions="Center"/>
+        <DataTemplate x:Key="SettingTabTemplate" x:DataType="wrapper:GraphGroupViewModel">
+            <TabViewItem
+                Header="{x:Bind GroupTitle, Mode=TwoWay}"
+                IsClosable="True">
+                <StackPanel
+                    Orientation="Vertical">
+                    <TextBox
+                        Text="{x:Bind GroupTitle, Mode=TwoWay}" />
+                </StackPanel>
+            </TabViewItem>
+        </DataTemplate>
 
-                    <CheckBox Grid.Row="2" Grid.Column="1"
-                              IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                              IsChecked="{Binding SelectedGroup.LineWidthEnabled}"
-                              VerticalOptions="Center" />
-                    <Label Grid.Row="2" Grid.Column="2"
-                           Text="Line Width"
-                           VerticalOptions="Center"/>
-                    <Entry Grid.Row="2" Grid.Column="3"
-                              IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                           BackgroundColor="{Binding SelectedGroup.LineWidthValueColor}" 
-                           Text="{Binding SelectedGroup.LineWidthValue}" 
-                           Style="{StaticResource MainEntryStyle}">
-                    </Entry>
+        <local:HomeDataTemplateSelector
+            x:Key="HomeDataTemplateSelector"
+            Home="{StaticResource HomeTabTemplate}"
+            GraphSettings="{StaticResource SettingTabTemplate}" />
+    </Page.Resources>
 
-                    <CheckBox Grid.Row="3" Grid.Column="1"
-                              IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                              IsChecked="{Binding SelectedGroup.LineTypeEnabled}"
-                              VerticalOptions="Center" />
-                    <Label Grid.Row="3" Grid.Column="2"
-                           Text="Line Type"
-                           VerticalOptions="Center"/>
-                    <Entry Grid.Row="3" Grid.Column="3"
-                              IsEnabled="{Binding SelectedGroup.IsWithLines}"
-                           Text="{Binding SelectedGroup.LineTypeValue}" 
-                           BackgroundColor="{Binding SelectedGroup.LineTypeValueColor}" 
-                           Style="{StaticResource MainEntryStyle}"/>
+    <Grid 
+        x:Name="ContentArea"
+        Margin="5" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
 
-                    <CheckBox Grid.Row="4"
-                              IsChecked="{Binding SelectedGroup.IsWithPoints}"
-                           VerticalOptions="Center" />
-                    <Label Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4"
-                           Text="With Points" 
-                           VerticalOptions="Center" />
+        <TabView 
+            x:Name="GroupTab"
+            Grid.Column="0" 
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Stretch"
+            TabWidthMode="Equal"
+            AddTabButtonClick="{x:Bind ViewModel.OnAddTabButtonClick}"
+            TabCloseRequested="{x:Bind ViewModel.OnTabCloseRequested}"
+            TabItemsSource="{x:Bind ViewModel.TabItems}"
+            TabItemTemplateSelector="{StaticResource HomeDataTemplateSelector}">
 
-                    <CheckBox Grid.Row="5" Grid.Column="1"
-                              IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                              IsChecked="{Binding SelectedGroup.PointsSizeEnabled}"
-                              VerticalOptions="Center" />
-                    <Label Grid.Row="5" Grid.Column="2"
-                           Text="Point Size"
-                           VerticalOptions="Center"/>
-                    <Entry Grid.Row="5" Grid.Column="3"
-                           IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                           Text="{Binding SelectedGroup.PointsSizeValue}" 
-                           BackgroundColor="{Binding SelectedGroup.PointsSizeValueColor}" 
-                           Style="{StaticResource MainEntryStyle}"/>
+            <TabView.TabStripHeader>
+                <Grid x:Name="ShellTitlebarInset" Background="Transparent" />
+            </TabView.TabStripHeader>
+            <!--<TabView.TabStripFooter>
+                <Button
+                    HorizontalAlignment="Right"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    Background="Transparent">
+                    <Button.FocusVisualSecondaryBrush>
+                        <TileBrush />
+                    </Button.FocusVisualSecondaryBrush>
+                    <Button.Content>
+                        <SymbolIcon Symbol="Setting" />
+                    </Button.Content>
+                </Button>
+            </TabView.TabStripFooter>-->
+        </TabView>
 
-                    <CheckBox Grid.Row="6" Grid.Column="1"
-                              IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                              IsChecked="{Binding SelectedGroup.PointsTypeEnabled}"
-                              VerticalOptions="Center" />
-                    <Label Grid.Row="6" Grid.Column="2"
-                           Text="Point Type"
-                           VerticalOptions="Center"/>
-                    <Entry Grid.Row="6" Grid.Column="3"
-                              IsEnabled="{Binding SelectedGroup.IsWithPoints}"
-                           Text="{Binding SelectedGroup.PointsTypeValue}" 
-                           BackgroundColor="{Binding SelectedGroup.PointsTypeValueColor}" 
-                           Style="{StaticResource MainEntryStyle}"/>
-                </Grid>
-
-                <Border Grid.Row="1">
-                </Border>
-
-                <CollectionView Grid.Row="2"
-                                    x:Name="GraphCollection"
-                                ItemsSource="{Binding SelectedGroup.Settings}">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical"
-                                           ItemSpacing="3"/>
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="5">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="5" />
-                                </Border.StrokeShape>
-                                <Grid ColumnDefinitions="40, 1*, 3*"
-                                      RowDefinitions="*,*,*,*">
-                                    <CheckBox IsChecked="{Binding TitleEnabled}" 
-                                              VerticalOptions="Center"/>
-                                    <Label Grid.Column="1"
-                                           Text="Title"
-                                           VerticalOptions="Center" />
-                                    <Grid Grid.Column="2" 
-                                          ColumnDefinitions="*,50">
-                                        <Entry
-                                           Text="{Binding TitleValue}"
-                                           BackgroundColor="{Binding TitleValueColor}" 
-                                           Style="{StaticResource MainEntryStyle}"/>
-                                        <Button Grid.Column="1" 
-                                                Text="X" 
-                                                BackgroundColor="Gray"
-                                                MaximumHeightRequest="40"
-                                                MinimumHeightRequest="40"
-                                                MaximumWidthRequest="40"
-                                                MinimumWidthRequest="40"
-                                                VerticalOptions="Center"
-                                                Command="{Binding Source={x:Reference GraphCollection}, Path=BindingContext.SelectedGroup.RemoveSettingCommand}"
-                                                CommandParameter="{Binding Model.Id}"/>
-                                    </Grid>
-
-                                    <RadioButton Grid.Row="1" Grid.ColumnSpan="2"
-                                             Content="Function"
-                                             IsChecked="{Binding IsFunction}" />
-                                    <Entry Grid.Row="1" Grid.Column="2"
-                                       Text="{Binding FunctionText}"
-                                       BackgroundColor="{Binding FunctionTextColor}"    
-                                       Style="{StaticResource MainEntryStyle}" />
-
-                                    <RadioButton Grid.Row="2" Grid.ColumnSpan="2"
-                                             Content="Data File"
-                                             IsChecked="{Binding IsDataFile}"/>
-                                    <Grid Grid.Row="2" Grid.Column="2" 
-                                          ColumnDefinitions="*,50">
-                                        <Label Text="{Binding DataFileName}"
-                                           LineBreakMode="TailTruncation" 
-                                           VerticalOptions="Center"/>
-                                        <Button Grid.Column="1" 
-                                                Text="🗀" 
-                                                Command="{Binding OpenFilePickerCommand}"/>
-                                    </Grid>
-
-
-                                    <HorizontalStackLayout Grid.Row="3" Grid.Column="1">
-                                        <CheckBox IsChecked="{Binding UsingRangeEnabled}"
-                                              IsEnabled="{Binding IsDataFile}"
-                                              VerticalOptions="Center"/>
-                                        <Label Text="Using"
-                                           VerticalOptions="Center" />
-                                    </HorizontalStackLayout>
-                                    <Grid Grid.Row="3" Grid.Column="2"
-                                      ColumnDefinitions="*,15,*">
-                                        <Entry Text="{Binding UsingRangeStart}"
-                                           IsEnabled="{Binding IsDataFile}"
-                                           BackgroundColor="{Binding UsingRangeTextColor}" 
-                                           Style="{StaticResource MainEntryStyle}" />
-                                        <Label Grid.Column="1"
-                                           Text=":"
-                                           VerticalOptions="Center"
-                                           HorizontalOptions="Center" />
-                                        <Entry Grid.Column="2"
-                                           Text="{Binding UsingRangeEnd}"
-                                           IsEnabled="{Binding IsDataFile}"
-                                           BackgroundColor="{Binding UsingRangeTextColor}" 
-                                           Style="{StaticResource MainEntryStyle}" />
-                                    </Grid>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Grid>
-        </Grid>
-
-        <Border Grid.Column="1" />
-
-        <Grid Grid.Column="2"
-              RowDefinitions="40, *, 80">
-            <ImageButton
-                Source="{AppThemeBinding Default=settings_light.png, Light=settings_light.png, Dark=settings_dark.png}"
-                WidthRequest="40"
-                HorizontalOptions="End"/>
-            <Label
-                Grid.Row="1"
-                Text="{Binding ErrorText}"
-                IsVisible="{Binding IsGenerateError}" />
-            <Image
-                Grid.Row="1"
-                IsVisible="{Binding IsGenerateSuccess}"
-                Source="{Binding ResultImage}" />
-            <Button Grid.Row="3"
-                    Text="Save Image"
-                    MaximumWidthRequest="200"
-                    MaximumHeightRequest="50"
-                    HorizontalOptions="Center"
-                    Command="{Binding SaveImageCommand}" />
-        </Grid>
+        <Button
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Command="{x:Bind ViewModel.SettingClickedCommand}"
+            >
+            <Button.Content>
+                <SymbolIcon Symbol="Setting" />
+            </Button.Content>
+        </Button>
     </Grid>
-</ContentPage>
+</Page>

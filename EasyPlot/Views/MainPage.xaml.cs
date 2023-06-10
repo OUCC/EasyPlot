@@ -1,11 +1,16 @@
-﻿namespace OUCC.EasyPlot.Views;
+﻿using EasyPlot.ViewModels;
 
-public partial class MainPage : ContentPage
+using Microsoft.UI.Xaml.Controls;
+
+namespace EasyPlot.Views;
+
+public sealed partial class MainPage : Page
 {
+    public MainViewModel ViewModel { get; }
+
     public MainPage()
     {
+        ViewModel = App.GetService<MainViewModel>();
         InitializeComponent();
-        //Application.Current!.UserAppTheme = AppTheme.Light;
     }
 }
-

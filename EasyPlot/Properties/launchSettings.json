@@ -1,8 +1,10 @@
-{
-  "profiles": {
-    "Windows Machine": {
-      "commandName": "MsixPackage",
-      "nativeDebugging": false
+﻿{
+    "profiles": {
+      "EasyPlot (Package)": {
+        "commandName": "MsixPackage"
+      },
+      "EasyPlot (Unpackaged)": {
+        "commandName": "Project"
+      }
     }
-  }
 }
