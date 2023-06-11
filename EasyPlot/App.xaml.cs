@@ -62,6 +62,7 @@ public partial class App : Application
             services.AddSingleton<IActivationService, ActivationService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<ISharedConfigService, SharedConfigService>(); 
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -69,6 +70,12 @@ public partial class App : Application
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
+            services.AddTransient<RightPanelViewModel>();
+            services.AddTransient<RightPanelPage>();
+            services.AddTransient<GraphWholeSettingsViewModel>();
+            services.AddTransient<GraphWholeSettingsPage>();
+            services.AddTransient<GraphGroupPage>();
+            // TODO: 全部ここに集約してしまっている。できたら解消する
             services.AddSingleton<MainViewModel>();
             services.AddTransient<MainPage>();
 

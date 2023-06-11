@@ -6,9 +6,13 @@ using CommunityToolkit.Mvvm.Input;
 using EasyPlot.Contracts.Services;
 using EasyPlot.Utilities;
 using EasyPlot.ViewModels.Wrapper;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Pickers;
 
 namespace EasyPlot.ViewModels;
@@ -19,7 +23,9 @@ public partial class MainViewModel : ObservableRecipient
 
     public WholeSettings WholeSettings { get; } = new();
 
-    public ObservableCollection<ObservableObject> TabItems { get; }
+    public List<GraphGroupViewModel> GraphGroups { get; }
+
+    public ObservableCollection<MainTabViewModel> TabItems { get; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsGenerateError))]
@@ -30,11 +36,9 @@ public partial class MainViewModel : ObservableRecipient
 
     public bool IsGenerateSuccess => ErrorText == string.Empty;
 
-    public string ResultImagePath { get; set; } = Path.Combine(Path.GetTempPath(), "EasyPlot", "result.png");
-
     public ImageSource? ResultImage { get; private set; }
 
-    private readonly object _lockObj = new();
+    public Uri ResultPath => new Uri(_sharedConfigService.ResultPngPath);
 
     private readonly CancellationTokenSource _cts = new();
 
@@ -44,58 +48,81 @@ public partial class MainViewModel : ObservableRecipient
 
     private readonly INavigationService _navigationService;
 
+    private readonly ISharedConfigService _sharedConfigService;
+
     public MainViewModel(INavigationService navigationService)
     {
         _navigationService = navigationService;
+        _sharedConfigService = App.GetService<ISharedConfigService>();
 
-        TabItems = new(new ObservableObject[] { WholeSettings, new GraphGroupViewModel() { GroupTitle = "Group 1" } });
+        GraphGroups = new(new[] { new GraphGroupViewModel() { GroupTitle = "Group 1" } });
+        TabItems = new();
 
         _loopTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
         PlotImageLoopAsync();
     }
 
     #region commands
-
-    public void OnAddTabButtonClick(TabView sender, object args)
+    public void OnAddTabButtonClick(TabView sender, object _)
     {
-        TabItems.Add(new GraphGroupViewModel()
+        // タイトルをBindするかが異なるため、直接バインディング
+        var newGroup = new GraphGroupViewModel()
         {
-            GroupTitle = $"Group {TabItems.Count + 1}",
-        });
+            GroupTitle = $"Group {GraphGroups.Count + 1}",
+        };
+        GraphGroups.Add(newGroup);
+        TabItems.Add(new MainTabViewModel(newGroup));
+
+        sender.SelectedIndex = TabItems.Count - 1;
     }
 
-    public void OnTabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+    public void OnTabCloseRequested(TabView _, TabViewTabCloseRequestedEventArgs args)
     {
-        TabItems.Remove((args.Item as ObservableObject)!);
-        if (TabItems.Count < 2)
+        var item = (MainTabViewModel)args.Item;
+        TabItems.Remove(item);
+        if (item.Data is not null)
         {
-            TabItems.Add(new GraphGroupViewModel { GroupTitle = "Group 1" });
+            GraphGroups.Remove(item.Data);
+
+            if (GraphGroups.Count == 0)
+            {
+                var newGroup = new GraphGroupViewModel()
+                {
+                    GroupTitle = "Group 1",
+                };
+                GraphGroups.Add(newGroup);
+                TabItems.Add(new MainTabViewModel(newGroup));
+            }
         }
+    }
+
+    public void OnComponentInitialized()
+    {
+        // なかで ViewModel を要求するので初期化後に呼ぶ
+        TabItems.Add(new MainTabViewModel(WholeSettings));
+        TabItems.Add(new MainTabViewModel(GraphGroups[0]));
+    }
+
+    [RelayCommand]
+    private void OnOpenSettingTab(TabView tabView)
+    {
+        var settingTab = TabItems
+            .Select((tab, index) => (tab, index))
+            .FirstOrDefault(t => t.tab.TabType == MainTabType.AppSettings);
+        if (settingTab.tab is null)
+        {
+            settingTab = (MainTabViewModel.CreateSetting(), TabItems.Count);
+
+            TabItems.Add(settingTab.tab);
+        }
+
+        tabView.SelectedIndex = settingTab.index;
     }
 
     [RelayCommand]
     private void OnSettingClicked()
     {
         _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
-    }
-
-    [RelayCommand]
-    private async Task OnSaveImageAsync()
-    {
-        var copiedPath = Path.Combine(Path.GetTempPath(), "EasyPlot", "result-copied.png");
-        File.Copy(ResultImagePath, copiedPath, true);
-
-        var picker = new FileSavePicker();
-        picker.FileTypeChoices.Add("png", new[] { ".png" });
-        picker.SuggestedFileName = "result";
-        var file = await picker.PickSaveFileAsync();
-
-        if (file is null)
-            return;
-
-        CachedFileManager.DeferUpdates(file);
-        File.Copy(copiedPath, file.Path);
-        _ = await CachedFileManager.CompleteUpdatesAsync(file);
     }
     #endregion
 
@@ -113,10 +140,10 @@ public partial class MainViewModel : ObservableRecipient
         try
         {
             // 起動直後はメインスレッドが確定していないので待つ
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
-            if (!File.Exists(ResultImagePath))
-                using (File.Create(ResultImagePath)) { }
+            if (!File.Exists(_sharedConfigService.ResultPngPath))
+                using (File.Create(_sharedConfigService.ResultPngPath)) { }
 
             while (await _loopTimer.WaitForNextTickAsync(token))
             {
@@ -127,9 +154,13 @@ public partial class MainViewModel : ObservableRecipient
 
                     if (plotText != _lastPlotText)
                     {
+                        _lastPlotText = plotText;
                         await CreatePlotImageAsync(plotText, token);
                     }
-                    _lastPlotText = plotText;
+                    else
+                    {
+                        _lastPlotText = plotText;
+                    }
                 }
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
@@ -140,14 +171,14 @@ public partial class MainViewModel : ObservableRecipient
         catch (OperationCanceledException) { }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            ErrorText = ex.ToString();
         }
     }
 
     private async Task CreatePlotImageAsync(string plotText, CancellationToken cancellationToken)
     {
-        var basePath = Path.Combine(Path.GetTempPath(), "EasyPlot");
-        var gpFilePath = Path.Combine(basePath, "result.gp");
+        var basePath = _sharedConfigService.TempDirectory;
+        var gpFilePath = _sharedConfigService.ResultGpPath;
         await File.WriteAllTextAsync(gpFilePath, plotText, UTF8WithoutBOM, cancellationToken);
         var info = new ProcessStartInfo
         {
@@ -170,22 +201,24 @@ public partial class MainViewModel : ObservableRecipient
         if (errorText != string.Empty)
             errorText = errorText.Replace($"\"{gpFilePath}\"", string.Empty);
 
-        lock (_lockObj)
+        if (process.ExitCode != 0 && errorText == string.Empty)
         {
-            if (process.ExitCode != 0 && errorText == string.Empty)
-            {
-                ErrorText = "unknown error occured";
+            ErrorText = "unknown error occured";
+            return;
+        }
+        else
+        {
+            ErrorText = errorText;
+            if (IsGenerateError)
                 return;
-            }
-            else
-            {
-                ErrorText = errorText;
-                if (IsGenerateError)
-                    return;
-            }
         }
 
-        //ResultImage = ImageSource.FromFile(ResultImagePath);
+        var imageFile = await StorageFile.GetFileFromPathAsync(_sharedConfigService.ResultPngPath);
+        var stream = await imageFile.OpenReadAsync();
+        var bitmap = new BitmapImage();
+        await bitmap.SetSourceAsync(stream);
+        ResultImage = bitmap;
+        OnPropertyChanged(nameof(ResultPath));
         OnPropertyChanged(nameof(ResultImage));
         OnPropertyChanged(nameof(ErrorText));
         OnPropertyChanged(nameof(IsGenerateError));
@@ -198,10 +231,8 @@ public partial class MainViewModel : ObservableRecipient
         builder.Append($"""
             set encoding utf8
             set terminal pngcairo
-            set output "{ResultImagePath.Replace('\\', '/')}"
+            set output "{_sharedConfigService.ResultPngPathNotBackSlash}"
             """);
-
-        var graphGroups = TabItems.OfType<GraphGroupViewModel>().ToArray();
 
         if (WholeSettings.Title.Enabled)
             builder.Append($"\nset title \"{WholeSettings.Title.Value}\"");
@@ -220,10 +251,10 @@ public partial class MainViewModel : ObservableRecipient
         if (WholeSettings.Sampling.Enabled)
             builder.Append($"\nset sample {WholeSettings.Sampling.Value}");
 
-        if (graphGroups.Any(g => g.Settings.Any()))
+        if (GraphGroups.Any(g => g.Settings.Any()))
             builder.Append("\nplot ");
 
-        foreach (var g in graphGroups)
+        foreach (var g in GraphGroups)
         {
             foreach (var s in g.Settings)
             {

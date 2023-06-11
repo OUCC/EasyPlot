@@ -16,6 +16,8 @@ public class PageService : IPageService
     {
         Configure<MainViewModel, MainPage>();
         Configure<SettingsViewModel, SettingsPage>();
+        Configure<RightPanelViewModel, RightPanelPage>();
+        Configure<GraphWholeSettingsViewModel, GraphWholeSettingsPage>();
     }
 
     public Type GetPageType(string key)

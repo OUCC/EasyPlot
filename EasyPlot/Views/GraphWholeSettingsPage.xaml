@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="EasyPlot.Views.GraphWholeSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EasyPlot.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Text="全体設定"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="30"/>
+
+            <ScrollViewer
+                Grid.Row="1"
+                VerticalScrollMode="Enabled"
+                VerticalScrollBarVisibility="Auto"
+                Margin="5" >
+                <StackPanel
+                    Orientation="Vertical"
+                    Spacing="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox
+                            Grid.Column="0"
+                            Content="title"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.Title.Enabled, Mode=TwoWay}" />
+                        <TextBox
+                            Grid.Column="1"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.Title.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.Title.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox
+                            Grid.Column="0"
+                            Content="xlabel"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.XLabel.Enabled, Mode=TwoWay}" />
+                        <TextBox
+                            Grid.Column="1"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.XLabel.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.XLabel.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox
+                            Grid.Column="0"
+                            Content="ylabel"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.YLabel.Enabled, Mode=TwoWay}" />
+                        <TextBox
+                            Grid.Column="1"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.YLabel.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.YLabel.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox
+                            Grid.Column="0"
+                            Content="xrange"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.XRange.Enabled, Mode=TwoWay}" />
+                        <TextBox
+                            Grid.Column="1"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.XRange.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.XRange.Start, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock
+                            Grid.Column="2"
+                            Text="~"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center" />
+                        <TextBox
+                            Grid.Column="3"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.XRange.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.XRange.End, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox
+                            Grid.Column="0"
+                            Content="yrange"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.YRange.Enabled, Mode=TwoWay}" />
+                        <TextBox
+                            Grid.Column="1"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.YRange.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.YRange.Start, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock
+                            Grid.Column="2"
+                            Text="~"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center" />
+                        <TextBox
+                            Grid.Column="3"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.YRange.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.YRange.End, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="28" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="logscale" />
+                        <CheckBox
+                            Grid.Column="2"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.EnabledXLogscale, Mode=TwoWay}"
+                            Content="X"/>
+                        <CheckBox
+                            Grid.Column="3"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.EnabledYLogscale, Mode=TwoWay}"
+                            Content="Y"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox
+                            Grid.Column="0"
+                            Content="sample"
+                            IsChecked="{x:Bind ViewModel.WholeSettings.Sampling.Enabled, Mode=TwoWay}" />
+                        <TextBox
+                            Grid.Column="1"
+                            IsEnabled="{x:Bind ViewModel.WholeSettings.Sampling.Enabled, Mode=OneWay}"
+                            Text="{x:Bind ViewModel.WholeSettings.Sampling.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <Frame
+            x:Name="ImagePane"
+            Grid.Column="1"/>
+    </Grid>
+</Page>

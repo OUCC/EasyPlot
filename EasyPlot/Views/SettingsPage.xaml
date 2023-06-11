@@ -18,18 +18,9 @@
 
         <TextBlock
             Grid.Row="0"
-            x:Uid="Settings_Title"
+            Text="Application Setting"
             Style="{StaticResource PageTitleStyle}" />
-        <StackPanel Grid.Row="0">
-            <Button
-                HorizontalAlignment="Right"
-                Command="{x:Bind ViewModel.CloseSettingCommand}">
-                <Button.Content>
-                    <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8BB;" />
-                </Button.Content>
-            </Button>
-        </StackPanel>
-        
+
         <StackPanel
             Grid.Row="1" 
             x:Name="ContentArea">

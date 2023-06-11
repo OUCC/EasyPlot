@@ -61,10 +61,4 @@ public partial class SettingsViewModel : ObservableRecipient
 
         return $"{"AppDisplayName".GetLocalized()} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
-
-    [RelayCommand]
-    private void OnCloseSetting()
-    {
-        _navigationService.NavigateTo(typeof(MainViewModel).FullName!);
-    }
 }

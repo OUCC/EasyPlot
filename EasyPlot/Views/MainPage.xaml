@@ -8,214 +8,48 @@
     xmlns:local="using:EasyPlot.Views"
     mc:Ignorable="d">
     <!--Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" 固定背景のやつ-->
-    <Page.Resources>
-        <Style
-            x:Key="SettingRowStyle"
-            TargetType="Grid">
-        </Style>
-
-        <DataTemplate x:Key="HomeTabTemplate" x:DataType="wrapper:WholeSettings">
-            <TabViewItem
-                Header="Home"
-                IsClosable="False">
-                <TabViewItem.IconSource>
-                    <SymbolIconSource Symbol="Home" />
-                </TabViewItem.IconSource>
-
-                <TabViewItem.Content>
-                    <Grid >
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40" />
-                            <RowDefinition Height="1*" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock
-                            Grid.Row="0"
-                            Text="全体設定"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontSize="30"/>
-
-                        <ScrollViewer
-                            Grid.Row="1"
-                            VerticalScrollMode="Enabled"
-                            VerticalScrollBarVisibility="Auto"
-                            Margin="5" >
-                            <StackPanel
-                                Orientation="Vertical"
-                                Spacing="2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <CheckBox
-                                        Grid.Column="0"
-                                        Content="title"
-                                        IsChecked="{x:Bind Title.Enabled, Mode=TwoWay}" />
-                                    <TextBox
-                                        Grid.Column="1"
-                                        IsEnabled="{x:Bind Title.Enabled, Mode=OneWay}"
-                                        Text="{x:Bind Title.Value, Mode=TwoWay}" />
-                                </Grid>
-
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <CheckBox
-                                        Grid.Column="0"
-                                        Content="xlabel"
-                                        IsChecked="{x:Bind XLabel.Enabled, Mode=TwoWay}" />
-                                    <TextBox
-                                        Grid.Column="1"
-                                        IsEnabled="{x:Bind XLabel.Enabled, Mode=OneWay}"
-                                        Text="{x:Bind XLabel.Value, Mode=TwoWay}" />
-                                </Grid>
-
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <CheckBox
-                                        Grid.Column="0"
-                                        Content="ylabel"
-                                        IsChecked="{x:Bind YLabel.Enabled, Mode=TwoWay}" />
-                                    <TextBox
-                                        Grid.Column="1"
-                                        IsEnabled="{x:Bind YLabel.Enabled, Mode=OneWay}"
-                                        Text="{x:Bind YLabel.Value, Mode=TwoWay}" />
-                                </Grid>
-
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="1*" />
-                                        <ColumnDefinition Width="15" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <CheckBox
-                                        Grid.Column="0"
-                                        Content="xrange"
-                                        IsChecked="{x:Bind XRange.Enabled, Mode=TwoWay}" />
-                                    <TextBox
-                                        Grid.Column="1"
-                                        IsEnabled="{x:Bind XRange.Enabled, Mode=OneWay}"
-                                        Text="{x:Bind XRange.Start, Mode=TwoWay}" />
-                                    <TextBlock
-                                        Grid.Column="2"
-                                        Text="~"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center" />
-                                    <TextBox
-                                        Grid.Column="3"
-                                        IsEnabled="{x:Bind XRange.Enabled, Mode=OneWay}"
-                                        Text="{x:Bind XRange.End, Mode=TwoWay}" />
-                                </Grid>
-
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="1*" />
-                                        <ColumnDefinition Width="15" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <CheckBox
-                                        Grid.Column="0"
-                                        Content="yrange"
-                                        IsChecked="{x:Bind YRange.Enabled, Mode=TwoWay}" />
-                                    <TextBox
-                                        Grid.Column="1"
-                                        IsEnabled="{x:Bind YRange.Enabled, Mode=OneWay}"
-                                        Text="{x:Bind YRange.Start, Mode=TwoWay}" />
-                                    <TextBlock
-                                        Grid.Column="2"
-                                        Text="~"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Center" />
-                                    <TextBox
-                                        Grid.Column="3"
-                                        IsEnabled="{x:Bind YRange.Enabled, Mode=OneWay}"
-                                        Text="{x:Bind YRange.End, Mode=TwoWay}" />
-                                </Grid>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </TabViewItem.Content>
-            </TabViewItem>
-        </DataTemplate>
-
-        <DataTemplate x:Key="SettingTabTemplate" x:DataType="wrapper:GraphGroupViewModel">
-            <TabViewItem
-                Header="{x:Bind GroupTitle, Mode=TwoWay}"
-                IsClosable="True">
-                <StackPanel
-                    Orientation="Vertical">
-                    <TextBox
-                        Text="{x:Bind GroupTitle, Mode=TwoWay}" />
-                </StackPanel>
-            </TabViewItem>
-        </DataTemplate>
-
-        <local:HomeDataTemplateSelector
-            x:Key="HomeDataTemplateSelector"
-            Home="{StaticResource HomeTabTemplate}"
-            GraphSettings="{StaticResource SettingTabTemplate}" />
-    </Page.Resources>
 
     <Grid 
         x:Name="ContentArea"
         Margin="5" >
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
 
         <TabView 
-            x:Name="GroupTab"
-            Grid.Column="0" 
+            x:Name="MainTab"
             HorizontalAlignment="Stretch" 
             VerticalAlignment="Stretch"
             TabWidthMode="Equal"
             AddTabButtonClick="{x:Bind ViewModel.OnAddTabButtonClick}"
             TabCloseRequested="{x:Bind ViewModel.OnTabCloseRequested}"
-            TabItemsSource="{x:Bind ViewModel.TabItems}"
-            TabItemTemplateSelector="{StaticResource HomeDataTemplateSelector}">
+            TabItemsSource="{x:Bind ViewModel.TabItems}">
+
+            <TabView.TabItemTemplate>
+                <DataTemplate x:DataType="wrapper:MainTabViewModel" >
+                    <TabViewItem
+                        Header="{x:Bind Title, Mode=OneWay}"
+                        IconSource="{x:Bind IconSource}"
+                        IsClosable="{x:Bind IsCloasble}"
+                        Content="{x:Bind DataContent}" />
+                </DataTemplate>
+            </TabView.TabItemTemplate>
 
             <TabView.TabStripHeader>
                 <Grid x:Name="ShellTitlebarInset" Background="Transparent" />
             </TabView.TabStripHeader>
-            <!--<TabView.TabStripFooter>
+            <TabView.TabStripFooter>
                 <Button
-                    HorizontalAlignment="Right"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
                     BorderBrush="Transparent"
                     BorderThickness="0"
-                    Background="Transparent">
-                    <Button.FocusVisualSecondaryBrush>
-                        <TileBrush />
-                    </Button.FocusVisualSecondaryBrush>
+                    Background="Transparent"
+                    Height="29"
+                    Command="{x:Bind ViewModel.OpenSettingTabCommand}"
+                    CommandParameter="{x:Bind MainTab}">
                     <Button.Content>
-                        <SymbolIcon Symbol="Setting" />
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE713;" FontSize="18" />
                     </Button.Content>
                 </Button>
-            </TabView.TabStripFooter>-->
+            </TabView.TabStripFooter>
         </TabView>
-
-        <Button
-            Grid.Column="1"
-            HorizontalAlignment="Right"
-            Command="{x:Bind ViewModel.SettingClickedCommand}"
-            >
-            <Button.Content>
-                <SymbolIcon Symbol="Setting" />
-            </Button.Content>
-        </Button>
     </Grid>
 </Page>
