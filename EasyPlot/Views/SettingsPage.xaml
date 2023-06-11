@@ -18,19 +18,19 @@
 
         <TextBlock
             Grid.Row="0"
-            Text="Application Setting"
+            Text="アプリケーション設定"
             Style="{StaticResource PageTitleStyle}" />
 
         <StackPanel
             Grid.Row="1" 
             x:Name="ContentArea">
-            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="個人設定" Style="{ThemeResource SubtitleTextBlockStyle}" />
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme" />
+                <TextBlock Text="テーマ" />
 
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
                     <RadioButton
-                        x:Uid="Settings_Theme_Light"
+                        Content="ライト"
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
                         FontSize="15"
@@ -40,7 +40,7 @@
                         </RadioButton.CommandParameter>
                     </RadioButton>
                     <RadioButton
-                        x:Uid="Settings_Theme_Dark"
+                        Content="ダーク"
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
                         FontSize="15"
@@ -50,7 +50,7 @@
                         </RadioButton.CommandParameter>
                     </RadioButton>
                     <RadioButton
-                        x:Uid="Settings_Theme_Default"
+                        Content="Windows テーマを使用"
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
                         FontSize="15"
@@ -62,16 +62,10 @@
                 </StackPanel>
             </StackPanel>
 
-            <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="このアプリケーションについて" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
                 <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
-
-                <TextBlock
-                    x:Uid="Settings_AboutDescription"
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Style="{ThemeResource BodyTextBlockStyle}" />
-                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
             </StackPanel>
         </StackPanel>
     </Grid>

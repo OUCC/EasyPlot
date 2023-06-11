@@ -59,6 +59,6 @@ public partial class SettingsViewModel : ObservableRecipient
             version = Assembly.GetExecutingAssembly().GetName().Version!;
         }
 
-        return $"{"AppDisplayName".GetLocalized()} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+        return $"Easy Plot - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
 }

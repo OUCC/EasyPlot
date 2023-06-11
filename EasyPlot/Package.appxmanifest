@@ -12,14 +12,14 @@
 
   <Identity
     Name="7c0b174b-5c8b-458c-b612-132edb03a36e"
-    Publisher="CN=yusuke"
-    Version="1.0.0.0" />
+    Publisher="CN=OUCC"
+    Version="0.3.0.0" />
     
   <mp:PhoneIdentity PhoneProductId="7c0b174b-5c8b-458c-b612-132edb03a36e" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
   <Properties>
     <DisplayName>EasyPlot</DisplayName>
-    <PublisherDisplayName>yusuke</PublisherDisplayName>
+    <PublisherDisplayName>OUCC</PublisherDisplayName>
     <Logo>Assets\Icon\StoreLogo.png</Logo>
   </Properties>
 
