@@ -2,16 +2,14 @@
 using EasyPlot.Contracts.Services;
 using EasyPlot.Core.Contracts.Services;
 using EasyPlot.Core.Services;
-using EasyPlot.Helpers;
 using EasyPlot.Models;
 using EasyPlot.Services;
 using EasyPlot.ViewModels;
 using EasyPlot.Views;
-
+using EasyPlot.Win32Api;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace EasyPlot;
 
@@ -88,15 +86,10 @@ public partial class App : Application
         UnhandledException += App_UnhandledException;
     }
 
-    private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    private  void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        var dialog = new ContentDialog
-        {
-            Title = "不明なエラーが発生しました",
-            Content = $"{e.Message}\n{e.Exception.StackTrace}",
-            CloseButtonText = "Ok"
-        };
-        await dialog.ShowAsync();
+        MessageBox.Show($"不明なエラーが発生しました\n{e.Message}\n{e.Exception.StackTrace}", "不明なエラーが発生しました");
+        Exit();
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
